@@ -61,14 +61,15 @@ class ApplicationTest < Minitest::Test
   end
 
   def test_courses_with_students_cannot_be_deleted
+    output = ""
     spanish = Course.create(name: "Spanish", course_code: "SPA", color: "green", period: "Fourth", description: "Learn Spanish si si")
     new_student = CourseStudent.create(student_id: 244, final_grade: "F")
     spanish.course_students << new_student
     begin
       spanish.destroy
     rescue
-      puts "cannot destroy course"
+      output = "cannot destroy course"
     end
-    assert_equal [new_student], spanish.course_students
+    assert_equal "cannot destroy course", output
   end
 end

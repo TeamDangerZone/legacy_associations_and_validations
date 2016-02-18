@@ -37,7 +37,8 @@ class ApplicationTest < Minitest::Test
     q = Reading.create(caption: "Math", url: "www.math.org")
     m.readings << q
     m.destroy
-    assert_equal [], m.readings
+    m.save
+    assert q.destroyed?
   end
 
   def test_courses_can_have_many_lessons
@@ -52,7 +53,8 @@ class ApplicationTest < Minitest::Test
     l = Lesson.create(name: "The Oxford Comma", description: "Discussion of the Oxford Comma", outline: "Will debate use of the Oxford Comma", lead_in_question: "Do you always use an Oxford Comma")
     e.lessons << l
     e.destroy
-    assert_equal [], e.lessons
+    e.save
+    assert l.destroyed?
   end
 
   def test_courses_can_have_many_instructors

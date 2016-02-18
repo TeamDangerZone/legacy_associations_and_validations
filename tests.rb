@@ -42,14 +42,33 @@ class ApplicationTest < Minitest::Test
   end
 
   def test_term_with_courses_cannot_be_deleted
-    t = Term.create(name: "Spring", starts_on: 2015-01-15, ends_on: 2015-05-30)
-    c = Course.create(name: "French", course_code: "FRE", color: "blue", period: "Third", description: "Learn French oui oui")
-    t.courses << c
+    spring = Term.create(name: "Spring", starts_on: 2015-01-15, ends_on: 2015-05-30)
+    french = Course.create(name: "French", course_code: "FRE", color: "blue", period: "Third", description: "Learn French oui oui")
+    spring.courses << french
     begin
-      t.destroy
+      spring.destroy
     rescue
-      "cannot destroy term"
+      puts "cannot delete term"
     end
-    assert_equal "cannot destroy term", "cannot destroy term"
+      assert_equal [french], spring.courses
+  end
+
+  def test_courses_can_have_many_students
+    c = Course.create(name: "Spanish", course_code: "SPA", color: "green", period: "Fourth", description: "Learn Spanish si si")
+    s = CourseStudent.create(student_id: 244, final_grade: "F")
+    c.course_students << s
+    assert_equal [s], c.course_students
+  end
+
+  def test_courses_with_students_cannot_be_deleted
+    spanish = Course.create(name: "Spanish", course_code: "SPA", color: "green", period: "Fourth", description: "Learn Spanish si si")
+    new_student = CourseStudent.create(student_id: 244, final_grade: "F")
+    spanish.course_students << new_student
+    begin
+      spanish.destroy
+    rescue
+      puts "cannot destroy course"
+    end
+    assert_equal [new_student], spanish.course_students
   end
 end

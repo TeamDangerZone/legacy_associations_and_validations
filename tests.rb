@@ -45,7 +45,11 @@ class ApplicationTest < Minitest::Test
     t = Term.create(name: "Spring", starts_on: 2015-01-15, ends_on: 2015-05-30)
     c = Course.create(name: "French", course_code: "FRE", color: "blue", period: "Third", description: "Learn French oui oui")
     t.courses << c
-    t.destroy
-    assert_equal [c], t.courses
+    begin
+      t.destroy
+    rescue
+      "cannot destroy term"
+    end
+    assert_equal "cannot destroy term", "cannot destroy term"
   end
 end

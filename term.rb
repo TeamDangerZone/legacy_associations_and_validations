@@ -1,5 +1,6 @@
 class Term < ActiveRecord::Base
   belongs_to :schools
+  has_many :courses, dependent: :restrict_with_error
   default_scope { order('ends_on DESC') }
 
   scope :for_school_id, ->(school_id) { where("school_id = ?", school_id) }

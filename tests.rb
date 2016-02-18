@@ -26,8 +26,8 @@ class ApplicationTest < Minitest::Test
   end
 
   def test_lessons_can_have_many_readings
-    l = Lesson.create(name: "English", description: "How to English", outline: "Will show how to English", lead_in_question: "Do you know how to English?")
-    r = Reading.create(caption: "When to use the Oxford Comma", url: "www.oxfordcomma.org")
+    l = Lesson.create(name: "The Oxford Comma", description: "Discussion of the Oxford Comma", outline: "Will debate use of the Oxford Comma", lead_in_question: "Do you always use an Oxford Comma")
+    r = Reading.create(caption: "History of the Oxford Comma", url: "www.oxfordcomma.org")
     l.readings << r
     assert_equal [r], l.readings
   end
@@ -38,6 +38,12 @@ class ApplicationTest < Minitest::Test
     m.readings << q
     m.destroy
     assert_equal [], m.readings
+  end
+  def test_courses_can_have_many_lessons
+    e = Course.create(name: "English", course_code: "ENG", color: "red", period: "First", description: "How to English")
+    l = Lesson.create(name: "The Oxford Comma", description: "Discussion of the Oxford Comma", outline: "Will debate use of the Oxford Comma", lead_in_question: "Do you always use an Oxford Comma")
+    e.lessons << l
+    assert_equal [l], e.lessons
   end
 
 end

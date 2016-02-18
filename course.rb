@@ -1,5 +1,5 @@
 class Course < ActiveRecord::Base
-  has_many :lessons
+  has_many :lessons, dependent: :destroy
 
   default_scope { order("courses.term_id DESC, courses.course_code, courses.id DESC") }
 

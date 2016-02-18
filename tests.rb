@@ -39,11 +39,21 @@ class ApplicationTest < Minitest::Test
     m.destroy
     assert_equal [], m.readings
   end
+
   def test_courses_can_have_many_lessons
     e = Course.create(name: "English", course_code: "ENG", color: "red", period: "First", description: "How to English")
     l = Lesson.create(name: "The Oxford Comma", description: "Discussion of the Oxford Comma", outline: "Will debate use of the Oxford Comma", lead_in_question: "Do you always use an Oxford Comma")
     e.lessons << l
     assert_equal [l], e.lessons
   end
+
+  def test_lessons_are_automatically_destroyed_when_course_is_destroyed
+    e = Course.create(name: "English", course_code: "ENG", color: "red", period: "First", description: "How to English")
+    l = Lesson.create(name: "The Oxford Comma", description: "Discussion of the Oxford Comma", outline: "Will debate use of the Oxford Comma", lead_in_question: "Do you always use an Oxford Comma")
+    e.lessons << l
+    e.destroy
+    assert_equal [], e.lessons
+  end
+
 
 end

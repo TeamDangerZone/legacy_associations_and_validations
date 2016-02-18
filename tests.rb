@@ -64,5 +64,13 @@ class ApplicationTest < Minitest::Test
     assert_equal [dan, molly], e.course_instructors
   end
 
-
+  def test_courses_with_instructors_cannot_be_deleted
+    phy = Course.create(name: "Physics", course_code: "PHY", color: "green", period: "Fourth", description: "Space stuff")
+    dave = CourseInstructor.create(instructor_id: 3)
+    mary = CourseInstructor.create(instructor_id: 4)
+    phy.course_instructors << dave
+    phy.course_instructors << mary
+    begin phy.destroy; rescue; end
+    assert_equal [dave, mary], phy.reload.course_instructors
+  end
 end

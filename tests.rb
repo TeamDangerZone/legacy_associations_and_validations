@@ -55,5 +55,14 @@ class ApplicationTest < Minitest::Test
     assert_equal [], e.lessons
   end
 
+  def test_courses_can_have_many_instructors
+    e = Course.create(name: "English", course_code: "ENG", color: "red", period: "First", description: "How to English")
+    dan = CourseInstructor.create(instructor_id: 1)
+    molly = CourseInstructor.create(instructor_id: 2)
+    e.course_instructors << dan
+    e.course_instructors << molly
+    assert_equal [dan, molly], e.course_instructors
+  end
+
 
 end

@@ -32,4 +32,12 @@ class ApplicationTest < Minitest::Test
     assert_equal [r], l.readings
   end
 
+  def test_readings_are_automatically_destroyed_when_lessons_are_destroyed
+    m = Lesson.create(name: "Math", description: "How to add", outline: "How to add", lead_in_question: "Do you know how to add?")
+    q = Reading.create(caption: "Math", url: "www.math.org")
+    m.readings << q
+    m.destroy
+    assert_equal [], m.readings
+  end
+
 end

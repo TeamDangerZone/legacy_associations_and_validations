@@ -50,7 +50,7 @@ class ApplicationTest < Minitest::Test
     rescue
       puts "cannot delete term"
     end
-      assert_equal [french], spring.courses
+      assert_equal [french], spring.reload.courses
   end
 
   def test_courses_can_have_many_students
@@ -70,6 +70,24 @@ class ApplicationTest < Minitest::Test
     rescue
       output = "cannot destroy course"
     end
+    spanish.reload
     assert_equal "cannot destroy course", output
+  end
+
+  def test_courses_can_have_many_assignments
+    c = Course.create(name: "Spanish", course_code: "SPA", color: "green", period: "Fourth", description: "Learn Spanish si si")
+    a = Assignment.create(name: "Habloing Espanol")
+    c.assignments << a
+    c.save
+    assert_equal [a], c.assignments
+  end
+
+  def test_assignments_are_automatically_destroyed_when_course_is_destroyed
+    c = Course.create(name: "Spanish", course_code: "SPA", color: "green", period: "Fourth", description: "Learn Spanish si si")
+    a = Assignment.create(name: "Habloing Espanol")
+    c.assignments << a
+    c.destroy
+    c.save
+    assert a.destroyed?
   end
 end

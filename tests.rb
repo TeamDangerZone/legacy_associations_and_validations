@@ -25,4 +25,13 @@ class ApplicationTest < Minitest::Test
     assert true
   end
 
+  def test_schools_can_have_many_terms
+    s = School.create(name: "Lakeview High")
+    f = Term.create(name: "Fall", starts_on: 2015-10-01, ends_on: 2015-12-30)
+    s.terms << f
+    assert_equal "Fall", f.name
+    assert_equal 2015-10-01, f.starts_on
+    assert_equal 2015-12-30, f.ends_on 
+  end
+
 end

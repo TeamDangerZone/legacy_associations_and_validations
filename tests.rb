@@ -25,4 +25,11 @@ class ApplicationTest < Minitest::Test
     assert true
   end
 
+  def test_lessons_can_have_many_readings
+    l = Lesson.create(name: "English", description: "How to English", outline: "Will show how to English", lead_in_question: "Do you know how to English?")
+    r = Reading.create(caption: "When to use the Oxford Comma", url: "www.oxfordcomma.org")
+    l.readings << r
+    assert_equal [r], l.readings
+  end
+
 end

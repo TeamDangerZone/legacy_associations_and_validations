@@ -64,7 +64,6 @@ class ApplicationTest < Minitest::Test
     begin
       spring.destroy
     rescue
-      puts "cannot delete term"
     end
       assert_equal [french], spring.reload.courses
   end

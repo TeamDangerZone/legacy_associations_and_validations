@@ -165,4 +165,8 @@ class ApplicationTest < Minitest::Test
   def test_readings_must_have_order_number_lesson_id_and_url
     assert_raises do r = Reading.create!() end
   end
+
+  def test_courses_must_have_course_code_and_name
+    assert_raises do Course.create!() end
+  end
 end

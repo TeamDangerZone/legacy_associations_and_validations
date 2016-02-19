@@ -142,4 +142,11 @@ class ApplicationTest < Minitest::Test
     assert a.destroyed?
   end
 
+  def test_in_class_assignments_can_have_many_lessons
+    l = Lesson.create(name: "The Oxford Comma", description: "Discussion of the Oxford Comma", outline: "Will debate use of the Oxford Comma", lead_in_question: "Do you always use an Oxford Comma")
+    b = Assignment.create(name: "Oxford Comma Practice")
+    b.lessons << l
+    assert_equal [l], b.lessons
+  end
+
 end

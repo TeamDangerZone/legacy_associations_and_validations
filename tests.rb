@@ -191,4 +191,14 @@ class ApplicationTest < Minitest::Test
     assert User.create(first_name: "Dan", last_name: "B", email: "my email", photo_url: "https://photo.com")
   end
 
+  def test_assignments_must_have_unique_names_in_course
+    e = Course.create(name: "English", course_code: "ENG", color: "red", period: "First", description: "How to English")
+    b = Assignment.create(name: "Oxford Comma Practice", percent_of_grade: 0.10)
+    c = Assignment.create(name: "Oxford Comma Practice", percent_of_grade: 0.10)
+    e.assignments << b
+    e.assignments << c
+    assert b.valid?
+    refute c.valid?
+  end
+
 end

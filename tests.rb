@@ -34,7 +34,23 @@ class ApplicationTest < Minitest::Test
     assert_equal 2015-12-30, f.ends_on
   end
 
-  def test_have_many_courses
+  def test_lessons_can_have_many_readings
+    l = Lesson.create(name: "The Oxford Comma", description: "Discussion of the Oxford Comma", outline: "Will debate use of the Oxford Comma", lead_in_question: "Do you always use an Oxford Comma?")
+    r = Reading.create(caption: "History of the Oxford Comma", url: "www.oxfordcomma.org")
+    l.readings << r
+    assert_equal [r], l.readings
+  end
+
+  def test_readings_are_automatically_destroyed_when_lessons_are_destroyed
+    m = Lesson.create(name: "The Mystery of 'subtraction'", description: "How to subtract", outline: "A peek at the nuances of 'subtraction'", lead_in_question: "How has subtraction impacted your life?")
+    q = Reading.create(caption: "2 - 3 = negative fun", url: "www.math.org")
+    m.readings << q
+    m.destroy
+    m.save
+    assert q.destroyed?
+  end
+
+  def test_terms_have_many_courses
     t = Term.create(name: "Spring", starts_on: 2015-01-15, ends_on: 2015-05-30)
     c = Course.create(name: "French", course_code: "FRE", color: "blue", period: "Third", description: "Learn French oui oui")
     t.courses << c
@@ -51,6 +67,22 @@ class ApplicationTest < Minitest::Test
       puts "cannot delete term"
     end
       assert_equal [french], spring.reload.courses
+  end
+
+  def test_courses_can_have_many_lessons
+    e = Course.create(name: "English", course_code: "ENG", color: "red", period: "First", description: "How to English")
+    l = Lesson.create(name: "The Oxford Comma", description: "Discussion of the Oxford Comma", outline: "Will debate use of the Oxford Comma", lead_in_question: "Do you always use an Oxford Comma")
+    e.lessons << l
+    assert_equal [l], e.lessons
+  end
+
+  def test_lessons_are_automatically_destroyed_when_course_is_destroyed
+    e = Course.create(name: "English", course_code: "ENG", color: "red", period: "First", description: "How to English")
+    l = Lesson.create(name: "The Oxford Comma", description: "Discussion of the Oxford Comma", outline: "Will debate use of the Oxford Comma", lead_in_question: "Do you always use an Oxford Comma")
+    e.lessons << l
+    e.destroy
+    e.save
+    assert l.destroyed?
   end
 
   def test_courses_can_have_many_students
@@ -74,6 +106,25 @@ class ApplicationTest < Minitest::Test
     assert_equal "cannot destroy course", output
   end
 
+  def test_courses_can_have_many_instructors
+    e = Course.create(name: "English", course_code: "ENG", color: "red", period: "First", description: "How to English")
+    dan = CourseInstructor.create(instructor_id: 1)
+    molly = CourseInstructor.create(instructor_id: 2)
+    e.course_instructors << dan
+    e.course_instructors << molly
+    assert_equal [dan, molly], e.course_instructors
+  end
+
+  def test_courses_with_instructors_cannot_be_deleted
+    physics = Course.create(name: "Physics", course_code: "PHY", color: "green", period: "Fourth", description: "Why things do what they do")
+    dave = CourseInstructor.create(instructor_id: 3)
+    mary = CourseInstructor.create(instructor_id: 4)
+    physics.course_instructors << dave
+    physics.course_instructors << mary
+    begin physics.destroy; rescue; end
+    assert_equal [dave, mary], physics.reload.course_instructors
+  end
+
   def test_courses_can_have_many_assignments
     c = Course.create(name: "Spanish", course_code: "SPA", color: "green", period: "Fourth", description: "Learn Spanish si si")
     a = Assignment.create(name: "Habloing Espanol")
@@ -90,4 +141,5 @@ class ApplicationTest < Minitest::Test
     c.save
     assert a.destroyed?
   end
+
 end

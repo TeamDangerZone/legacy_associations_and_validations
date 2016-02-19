@@ -180,4 +180,9 @@ class ApplicationTest < Minitest::Test
     assert_raises do a = Assignment.create!end
   end
 
+  def test_user_email_has_proper_format
+    assert_raises do dan = User.create!(first_name: "Dan", last_name: "B", email: "my email")end
+    assert dan = User.create(first_name: "Dan", last_name: "B", email: "d@gmail.com")
+  end
+
 end

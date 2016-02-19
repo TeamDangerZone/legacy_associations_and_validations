@@ -43,7 +43,7 @@ class ApplicationTest < Minitest::Test
 
   def test_readings_are_automatically_destroyed_when_lessons_are_destroyed
     m = Lesson.create(name: "The Mystery of 'subtraction'", description: "How to subtract", outline: "A peek at the nuances of 'subtraction'", lead_in_question: "How has subtraction impacted your life?")
-    q = Reading.create(caption: "2 - 3 = negative fun", order_number: 4, url: "www.math.org")
+    q = Reading.create(caption: "2 - 3 = negative fun", order_number: 4, url: "http://www.math.org")
     m.readings << q
     m.destroy
     m.save
@@ -166,7 +166,16 @@ class ApplicationTest < Minitest::Test
     assert_raises do r = Reading.create!() end
   end
 
+  def test_reading_urls_must_start_with_http_or_https
+    assert_raises do r = Reading.create!(lesson_id: 5, order_number: 4, url: "hello") end
+    assert Reading.create(lesson_id: 3, order_number: 4, url: "https://")
+    assert Reading.create(lesson_id: 2, order_number: 4, url: "http://")
+    assert_raises do r = Reading.create!(lesson_id: 1, order_number: 4, url: "http.hi") end
+  end
+
   def test_courses_must_have_course_code_and_name
     assert_raises do Course.create!() end
   end
+
+
 end

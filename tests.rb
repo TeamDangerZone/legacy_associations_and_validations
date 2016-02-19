@@ -148,4 +148,13 @@ class ApplicationTest < Minitest::Test
     pre.lessons << l
     assert_equal [l], pre.lessons
   end
+
+  def test_schools_can_have_many_courses_through_terms
+    s = School.create(name: "Lakeview High")
+    f = Term.create(name: "Fall", starts_on: 2015-10-01, ends_on: 2015-12-30)
+    phys_ed = Course.create(name: "P.E.", course_code: "PE", color: "grey", period: "ninth", description: "Learn to exercise.")
+    f.courses << phys_ed
+    s.terms << f
+    assert_equal [phys_ed], s.courses
+  end
 end

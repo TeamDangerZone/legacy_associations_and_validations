@@ -1,4 +1,10 @@
 test.sqlite3
+<<<<<<< HEAD
 .DS_store
 .homework.json
 .byebug_history
+=======
+.byebug_history
+.DS_Store
+.homework.json
+>>>>>>> dan

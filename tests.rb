@@ -27,7 +27,7 @@ class ApplicationTest < Minitest::Test
 
   def test_schools_can_have_many_terms
     s = School.create(name: "Lakeview High")
-    f = Term.create(name: "Fall", starts_on: 2015-10-01, ends_on: 2015-12-30)
+    f = Term.create(name: "Fall", starts_on: 2015-10-01, ends_on: 2015-12-30, school_id: 4)
     s.terms << f
     assert_equal "Fall", f.name
     assert_equal 2015-10-01, f.starts_on
@@ -51,14 +51,14 @@ class ApplicationTest < Minitest::Test
   end
 
   def test_term_can_have_many_courses
-    t = Term.create(name: "Spring", starts_on: 2015-01-15, ends_on: 2015-05-30)
+    t = Term.create(name: "Spring", starts_on: 2015-01-15, ends_on: 2015-05-30, school_id: 4)
     c = Course.create(name: "French", course_code: "FRE", color: "blue", period: "Third", description: "Learn French oui oui")
     t.courses << c
     assert_equal [c], t.courses
   end
 
   def test_term_with_courses_cannot_be_deleted
-    spring = Term.create(name: "Spring", starts_on: 2015-01-15, ends_on: 2015-05-30)
+    spring = Term.create(name: "Spring", starts_on: 2015-01-15, ends_on: 2015-05-30, school_id: 4)
     french = Course.create(name: "French", course_code: "FRE", color: "blue", period: "Third", description: "Learn French oui oui")
     spring.courses << french
     begin
@@ -161,6 +161,10 @@ class ApplicationTest < Minitest::Test
 
   def test_schools_must_have_names
     assert_raises do s = School.create!end
+  end
+
+  def test_terms_must_have_name_starts_on_ends_on_and_school_id
+    assert_raises do t = Term.create!end
   end
 
 end

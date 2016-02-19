@@ -11,7 +11,7 @@ ActiveRecord::Base.establish_connection(
   adapter:  'sqlite3',
   database: 'test.sqlite3'
 )
-
+ActiveRecord::Migration.verbose = false
 # Gotta run migrations before we can run tests.  Down will fail the first time,
 # so we wrap it in a begin/rescue.
 begin ApplicationMigration.migrate(:down); rescue; end
@@ -43,7 +43,7 @@ class ApplicationTest < Minitest::Test
 
   def test_readings_are_automatically_destroyed_when_lessons_are_destroyed
     m = Lesson.create(name: "The Mystery of 'subtraction'", description: "How to subtract", outline: "A peek at the nuances of 'subtraction'", lead_in_question: "How has subtraction impacted your life?")
-    q = Reading.create(caption: "2 - 3 = negative fun", url: "www.math.org")
+    q = Reading.create(caption: "2 - 3 = negative fun", order_number: 4, url: "www.math.org")
     m.readings << q
     m.destroy
     m.save
@@ -156,5 +156,13 @@ class ApplicationTest < Minitest::Test
     f.courses << phys_ed
     s.terms << f
     assert_equal [phys_ed], s.courses
+  end
+
+  def test_lessons_must_have_name
+    assert_raises do l = Lesson.create!() end
+  end
+
+  def test_readings_must_have_order_number_lesson_id_and_url
+    assert_raises do r = Reading.create!() end
   end
 end

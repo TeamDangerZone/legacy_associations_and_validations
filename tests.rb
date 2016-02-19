@@ -171,4 +171,9 @@ class ApplicationTest < Minitest::Test
     assert_raises do u = User.create!end
   end
 
+  def test_user_emails_must_be_unique
+    dan = User.create(first_name: "Dan", last_name: "B", email: "d@gmail.com")
+    assert_raises do dave = User.create!(first_name: "Dave", last_name: "C", email: "d@gmail.com")end
+  end
+
 end

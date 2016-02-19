@@ -142,4 +142,10 @@ class ApplicationTest < Minitest::Test
     assert a.destroyed?
   end
 
+  def test_pre_class_assignments_can_have_many_lessons
+    pre = Assignment.create(name: "Pre-assignment 1")
+    l = Lesson.create(name: "French verb conjugation", description: "Discussion of the French verbs", outline: "Will discuss French stuff", lead_in_question: "Parlez vous francais?")
+    pre.lessons << l
+    assert_equal [l], pre.lessons
+  end
 end

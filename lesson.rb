@@ -1,4 +1,5 @@
 class Lesson < ActiveRecord::Base
+  belongs_to :pre_assignments, class_name: "Assignment", foreign_key: "pre_class_assignment_id"
   has_many :readings, dependent: :destroy
   belongs_to :courses
   delegate :code_and_name, to: :course, prefix: true

@@ -135,7 +135,7 @@ class ApplicationTest < Minitest::Test
 
   def test_assignments_are_automatically_destroyed_when_course_is_destroyed
     c = Course.create(name: "Spanish", course_code: "SPA", color: "green", period: "Fourth", description: "Learn Spanish si si")
-    a = Assignment.create(name: "Habloing Espanol")
+    a = Assignment.create(name: "Habloing Espanol", course_id: 4, percent_of_grade: 0.10)
     c.assignments << a
     c.destroy
     c.save
@@ -174,6 +174,10 @@ class ApplicationTest < Minitest::Test
   def test_user_emails_must_be_unique
     dan = User.create(first_name: "Dan", last_name: "B", email: "d@gmail.com")
     assert_raises do dave = User.create!(first_name: "Dave", last_name: "C", email: "d@gmail.com")end
+  end
+
+  def test_assignments_must_have_course_id_name_percent_of_grade
+    assert_raises do a = Assignment.create!end
   end
 
 end

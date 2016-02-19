@@ -159,4 +159,8 @@ class ApplicationTest < Minitest::Test
     assert_equal [r], e.readings
   end
 
+  def test_schools_must_have_names
+    assert_raises do s = School.create!end
+  end
+
 end

@@ -6,7 +6,7 @@ class Course < ActiveRecord::Base
   has_many :course_instructors, dependent: :restrict_with_exception
   validates :course_code, presence: true
   validates_uniqueness_of :course_code, :scope => [:term_id]
-
+  validates :course_code, format: { with: /\A\w\w\w\d\d\d\b/i, on: :create}
 
   default_scope { order("courses.term_id DESC, courses.course_code, courses.id DESC") }
 

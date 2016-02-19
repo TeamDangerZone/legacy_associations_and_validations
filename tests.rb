@@ -52,14 +52,14 @@ class ApplicationTest < Minitest::Test
 
   def test_term_can_have_many_courses
     t = Term.create(name: "Spring", starts_on: 2015-01-15, ends_on: 2015-05-30)
-    c = Course.create(name: "French", course_code: "FRE", color: "blue", period: "Third", description: "Learn French oui oui")
+    c = Course.create(name: "French", course_code: "FRE333", color: "blue", period: "Third", description: "Learn French oui oui")
     t.courses << c
     assert_equal [c], t.courses
   end
 
   def test_term_with_courses_cannot_be_deleted
     spring = Term.create(name: "Spring", starts_on: 2015-01-15, ends_on: 2015-05-30)
-    french = Course.create(name: "French", course_code: "FRE", color: "blue", period: "Third", description: "Learn French oui oui")
+    french = Course.create(name: "French", course_code: "FRE654", color: "blue", period: "Third", description: "Learn French oui oui")
     spring.courses << french
     begin
       spring.destroy
@@ -70,14 +70,14 @@ class ApplicationTest < Minitest::Test
   end
 
   def test_courses_can_have_many_lessons
-    e = Course.create(name: "English", course_code: "ENG", color: "red", period: "First", description: "How to English")
+    e = Course.create(name: "English", course_code: "ENG333", color: "red", period: "First", description: "How to English")
     l = Lesson.create(name: "The Oxford Comma", description: "Discussion of the Oxford Comma", outline: "Will debate use of the Oxford Comma", lead_in_question: "Do you always use an Oxford Comma")
     e.lessons << l
     assert_equal [l], e.lessons
   end
 
   def test_lessons_are_automatically_destroyed_when_course_is_destroyed
-    e = Course.create(name: "English", course_code: "ENG", color: "red", period: "First", description: "How to English")
+    e = Course.create(name: "English", course_code: "ENG333", color: "red", period: "First", description: "How to English")
     l = Lesson.create(name: "The Oxford Comma", description: "Discussion of the Oxford Comma", outline: "Will debate use of the Oxford Comma", lead_in_question: "Do you always use an Oxford Comma")
     e.lessons << l
     e.destroy
@@ -86,7 +86,7 @@ class ApplicationTest < Minitest::Test
   end
 
   def test_courses_can_have_many_students
-    c = Course.create(name: "Spanish", course_code: "SPA", color: "green", period: "Fourth", description: "Learn Spanish si si")
+    c = Course.create(name: "Spanish", course_code: "SPA111", color: "green", period: "Fourth", description: "Learn Spanish si si")
     s = CourseStudent.create(student_id: 244, final_grade: "F")
     c.course_students << s
     assert_equal [s], c.course_students
@@ -94,7 +94,7 @@ class ApplicationTest < Minitest::Test
 
   def test_courses_with_students_cannot_be_deleted
     output = ""
-    spanish = Course.create(name: "Spanish", term_id: 9, course_code: "SPA", color: "green", period: "Fourth", description: "Learn Spanish si si")
+    spanish = Course.create(name: "Spanish", term_id: 9, course_code: "SPA000", color: "green", period: "Fourth", description: "Learn Spanish si si")
     new_student = CourseStudent.create(student_id: 244, final_grade: "F")
     spanish.course_students << new_student
     begin
@@ -107,7 +107,7 @@ class ApplicationTest < Minitest::Test
   end
 
   def test_courses_can_have_many_instructors
-    e = Course.create(name: "English", course_code: "ENG", color: "red", period: "First", description: "How to English")
+    e = Course.create(name: "English", course_code: "ENG000", color: "red", period: "First", description: "How to English")
     dan = CourseInstructor.create(instructor_id: 1)
     molly = CourseInstructor.create(instructor_id: 2)
     e.course_instructors << dan
@@ -116,7 +116,7 @@ class ApplicationTest < Minitest::Test
   end
 
   def test_courses_with_instructors_cannot_be_deleted
-    physics = Course.create(name: "Physics", course_code: "PHY", color: "green", period: "Fourth", description: "Why things do what they do")
+    physics = Course.create(name: "Physics", course_code: "PHY987", color: "green", period: "Fourth", description: "Why things do what they do")
     dave = CourseInstructor.create(instructor_id: 3)
     mary = CourseInstructor.create(instructor_id: 4)
     physics.course_instructors << dave
@@ -126,7 +126,7 @@ class ApplicationTest < Minitest::Test
   end
 
   def test_courses_can_have_many_assignments
-    c = Course.create(name: "Spanish", course_code: "SPA", color: "green", period: "Fourth", description: "Learn Spanish si si")
+    c = Course.create(name: "Spanish", course_code: "SPA789", color: "green", period: "Fourth", description: "Learn Spanish si si")
     a = Assignment.create(name: "Habloing Espanol")
     c.assignments << a
     c.save
@@ -134,7 +134,7 @@ class ApplicationTest < Minitest::Test
   end
 
   def test_assignments_are_automatically_destroyed_when_course_is_destroyed
-    c = Course.create(name: "Spanish", course_code: "SPA", color: "green", period: "Fourth", description: "Learn Spanish si si")
+    c = Course.create(name: "Spanish", course_code: "SPA678", color: "green", period: "Fourth", description: "Learn Spanish si si")
     a = Assignment.create(name: "Habloing Espanol")
     c.assignments << a
     c.destroy
@@ -152,7 +152,7 @@ class ApplicationTest < Minitest::Test
   def test_schools_can_have_many_courses_through_terms
     s = School.create(name: "Lakeview High")
     f = Term.create(name: "Fall", starts_on: 2015-10-01, ends_on: 2015-12-30)
-    phys_ed = Course.create(name: "P.E.", course_code: "PE", color: "grey", period: "ninth", description: "Learn to exercise.")
+    phys_ed = Course.create(name: "P.E.", course_code: "PEE133", color: "grey", period: "ninth", description: "Learn to exercise.")
     f.courses << phys_ed
     s.terms << f
     assert_equal [phys_ed], s.courses
@@ -179,13 +179,18 @@ class ApplicationTest < Minitest::Test
 
   def test_course_code_is_unique_within_given_term_id
     fall = Term.create(name: "fall")
-    french = Course.create(name: "Frenchies", course_code: "FRE", color: "blue", period: "Third", description: "Learn French oui oui")
-    french2 = Course.create(name: "Spanishdudes", course_code: "FRE", color: "green", period: "Fourth", description: "Learn Spanish si si")
+    french = Course.create(name: "Frenchies", course_code: "FRE123", color: "blue", period: "Third", description: "Learn French oui oui")
+    french2 = Course.create(name: "Spanishdudes", course_code: "FRE123", color: "green", period: "Fourth", description: "Learn Spanish si si")
     fall.courses << french
     fall.courses << french2
-    french.save
-    french2.save
     assert french.valid?
     refute french2.valid?
+  end
+
+  def test_course_code_starts_with_3_letters_ends_with_3_numbers
+    assert_raises do c = Course.create!(course_code: "f3f39f") end
+    assert Course.create(course_code: "xxx333")
+    assert Course.create(course_code: "qqq555")
+    assert_raises do c = Course.create!(course_code: "893f39") end
   end
 end

@@ -185,4 +185,10 @@ class ApplicationTest < Minitest::Test
     assert dan = User.create(first_name: "Dan", last_name: "B", email: "d@gmail.com")
   end
 
+  def test_user_photo_url_has_proper_format
+    assert_raises do dan = User.create!(first_name: "Dan", last_name: "B", email: "my email", photo_url: "htps://photo")end
+    assert User.create(first_name: "Dan", last_name: "B", email: "my email", photo_url:"http://photo.com")
+    assert User.create(first_name: "Dan", last_name: "B", email: "my email", photo_url: "https://photo.com")
+  end
+
 end

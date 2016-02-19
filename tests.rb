@@ -167,4 +167,8 @@ class ApplicationTest < Minitest::Test
     assert_raises do t = Term.create!end
   end
 
+  def test_user_must_have_first_name_last_name_email
+    assert_raises do u = User.create!end
+  end
+
 end

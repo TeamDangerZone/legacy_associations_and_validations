@@ -94,7 +94,7 @@ class ApplicationTest < Minitest::Test
 
   def test_courses_with_students_cannot_be_deleted
     output = ""
-    spanish = Course.create(name: "Spanish", course_code: "SPA", color: "green", period: "Fourth", description: "Learn Spanish si si")
+    spanish = Course.create(name: "Spanish", term_id: 9, course_code: "SPA", color: "green", period: "Fourth", description: "Learn Spanish si si")
     new_student = CourseStudent.create(student_id: 244, final_grade: "F")
     spanish.course_students << new_student
     begin
@@ -177,5 +177,15 @@ class ApplicationTest < Minitest::Test
     assert_raises do Course.create!() end
   end
 
-
+  def test_course_code_is_unique_within_given_term_id
+    fall = Term.create(name: "fall")
+    french = Course.create(name: "Frenchies", course_code: "FRE", color: "blue", period: "Third", description: "Learn French oui oui")
+    french2 = Course.create(name: "Spanishdudes", course_code: "FRE", color: "green", period: "Fourth", description: "Learn Spanish si si")
+    fall.courses << french
+    fall.courses << french2
+    french.save
+    french2.save
+    assert french.valid?
+    refute french2.valid?
+  end
 end

@@ -151,7 +151,7 @@ class ApplicationTest < Minitest::Test
   def test_courses_can_have_many_readings_through_lessons
     e = Course.create(name: "English", course_code: "ENG", color: "red", period: "First", description: "How to English")
     l = Lesson.create(name: "The Oxford Comma", description: "Discussion of the Oxford Comma", outline: "Will debate use of the Oxford Comma", lead_in_question: "Do you always use an Oxford Comma")
-    r = Reading.create(caption: "History of the Oxford Comma", url: "www.oxfordcomma.org")
+    r = Reading.create(caption: "History of the Oxford Comma", url: "http://www.oxfordcomma.org")
     l.readings << r
     e.lessons << l
     p e.readings

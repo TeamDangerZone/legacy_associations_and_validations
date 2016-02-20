@@ -255,4 +255,12 @@ class ApplicationTest < Minitest::Test
     assert Course.create(course_code: "qqq555")
     assert_raises do c = Course.create!(course_code: "893f39") end
   end
+
+  def test_instructors_as_users_can_be_course_instructors
+    english_prof = CourseInstructor.create()
+    shirley = User.create(first_name: "Shirley", last_name: "Temple", email: "st@aol.com", photo_url: "https://www.com")
+    english_prof.instructor = shirley
+    english_prof.save
+    assert_equal shirley, english_prof.instructor
+  end
 end

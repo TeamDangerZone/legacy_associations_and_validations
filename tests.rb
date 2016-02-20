@@ -5,7 +5,6 @@ require 'minitest/pride'
 # Include both the migration and the app itself
 require './migration'
 require './application'
-
 # Overwrite the development database connection with a test connection.
 ActiveRecord::Base.establish_connection(
   adapter:  'sqlite3',
@@ -51,15 +50,20 @@ class ApplicationTest < Minitest::Test
   end
 
   def test_term_can_have_many_courses
+    s = School.create(name: "Lakeview High")
     t = Term.create(name: "Spring", starts_on: 2015-01-15, ends_on: 2015-05-30, school_id: nil)
     c = Course.create(name: "French", course_code: "FRE333", color: "blue", period: "Third", description: "Learn French oui oui")
     t.courses << c
+    t.save
     assert_equal [c], t.courses
   end
 
   def test_term_with_courses_cannot_be_deleted
+    s = School.create(name: "Lakeview High")
     spring = Term.create(name: "Spring", starts_on: 2015-01-15, ends_on: 2015-05-30, school_id: nil)
     french = Course.create(name: "French", course_code: "FRE654", color: "blue", period: "Third", description: "Learn French oui oui")
+    s.terms << spring
+    s.save
     spring.courses << french
     begin
       spring.destroy

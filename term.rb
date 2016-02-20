@@ -1,5 +1,5 @@
 class Term < ActiveRecord::Base
-  belongs_to :schools
+  belongs_to :school
   has_many :courses, dependent: :restrict_with_exception
   validates :name, presence: true
   validates :starts_on, presence: true

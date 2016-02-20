@@ -1,6 +1,6 @@
 class Assignment < ActiveRecord::Base
   has_many :lessons, class_name: "Lesson", foreign_key: "pre_class_assignment_id"
-  belongs_to :courses
+  belongs_to :course
   has_many :lessons, class_name: "Lesson", foreign_key: "in_class_assignment_id"
   validates :course_id, presence: true
   validates :name, presence: true

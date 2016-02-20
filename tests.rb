@@ -27,7 +27,7 @@ class ApplicationTest < Minitest::Test
 
   def test_schools_can_have_many_terms
     s = School.create(name: "Lakeview High")
-    f = Term.create(name: "Fall", starts_on: 2015-10-01, ends_on: 2015-12-30, school_id: 4)
+    f = Term.create(name: "Fall", starts_on: 2015-10-01, ends_on: 2015-12-30, school_id: nil)
     s.terms << f
     assert_equal "Fall", f.name
     assert_equal 2015-10-01, f.starts_on
@@ -36,14 +36,14 @@ class ApplicationTest < Minitest::Test
 
   def test_lessons_can_have_many_readings
     l = Lesson.create(name: "The Oxford Comma", description: "Discussion of the Oxford Comma", outline: "Will debate use of the Oxford Comma", lead_in_question: "Do you always use an Oxford Comma?")
-    r = Reading.create(caption: "History of the Oxford Comma", url: "www.oxfordcomma.org")
+    r = Reading.create(lesson_id: nil, caption: "History of the Oxford Comma", order_number:01, url: "www.oxfordcomma.org")
     l.readings << r
     assert_equal [r], l.readings
   end
 
   def test_readings_are_automatically_destroyed_when_lessons_are_destroyed
     m = Lesson.create(name: "The Mystery of 'subtraction'", description: "How to subtract", outline: "A peek at the nuances of 'subtraction'", lead_in_question: "How has subtraction impacted your life?")
-    q = Reading.create(caption: "2 - 3 = negative fun", order_number: 4, url: "http://www.math.org")
+    q = Reading.create(lesson_id: nil, caption: "2 - 3 = negative fun", order_number: 4, url: "http://www.math.org")
     m.readings << q
     m.destroy
     m.save
@@ -51,14 +51,14 @@ class ApplicationTest < Minitest::Test
   end
 
   def test_term_can_have_many_courses
-    t = Term.create(name: "Spring", starts_on: 2015-01-15, ends_on: 2015-05-30)
+    t = Term.create(name: "Spring", starts_on: 2015-01-15, ends_on: 2015-05-30, school_id: nil)
     c = Course.create(name: "French", course_code: "FRE333", color: "blue", period: "Third", description: "Learn French oui oui")
     t.courses << c
     assert_equal [c], t.courses
   end
 
   def test_term_with_courses_cannot_be_deleted
-    spring = Term.create(name: "Spring", starts_on: 2015-01-15, ends_on: 2015-05-30)
+    spring = Term.create(name: "Spring", starts_on: 2015-01-15, ends_on: 2015-05-30, school_id: nil)
     french = Course.create(name: "French", course_code: "FRE654", color: "blue", period: "Third", description: "Learn French oui oui")
     spring.courses << french
     begin
@@ -126,7 +126,7 @@ class ApplicationTest < Minitest::Test
 
   def test_courses_can_have_many_assignments
     c = Course.create(name: "Spanish", course_code: "SPA789", color: "green", period: "Fourth", description: "Learn Spanish si si")
-    a = Assignment.create(name: "Habloing Espanol")
+    a = Assignment.create(course_id: nil, name: "Habloing Espanol", percent_of_grade: 0.10)
     c.assignments << a
     c.save
     assert_equal [a], c.assignments
@@ -134,7 +134,7 @@ class ApplicationTest < Minitest::Test
 
   def test_assignments_are_automatically_destroyed_when_course_is_destroyed
     c = Course.create(name: "Spanish", course_code: "SPA678", color: "green", period: "Fourth", description: "Learn Spanish si si")
-    a = Assignment.create(name: "Habloing Espanol")
+    a = Assignment.create(course_id: nil, name: "Bien", percent_of_grade: 0.10)
     c.assignments << a
     c.destroy
     c.save
@@ -143,15 +143,15 @@ class ApplicationTest < Minitest::Test
 
   def test_in_class_assignments_can_have_many_lessons
     l = Lesson.create(name: "The Oxford Comma", description: "Discussion of the Oxford Comma", outline: "Will debate use of the Oxford Comma", lead_in_question: "Do you always use an Oxford Comma")
-    b = Assignment.create(name: "Oxford Comma Practice")
+    b = Assignment.create(course_id: nil, name: "Oxford Comma Practice", percent_of_grade: 0.05)
     b.lessons << l
     assert_equal [l], b.lessons
   end
 
   def test_courses_can_have_many_readings_through_lessons
-    e = Course.create(name: "English", course_code: "ENG", color: "red", period: "First", description: "How to English")
+    e = Course.create(name: "English", course_code: "ENG001", color: "red", period: "First", description: "How to English")
     l = Lesson.create(name: "The Oxford Comma", description: "Discussion of the Oxford Comma", outline: "Will debate use of the Oxford Comma", lead_in_question: "Do you always use an Oxford Comma")
-    r = Reading.create(caption: "History of the Oxford Comma", url: "www.oxfordcomma.org")
+    r = Reading.create(lesson_id: nil, caption: "History of the Oxford Comma", order_number: 03, url: "http://oxfordcomma.com")
     l.readings << r
     e.lessons << l
     p e.readings
@@ -191,9 +191,9 @@ class ApplicationTest < Minitest::Test
   end
 
   def test_assignments_must_have_unique_names_in_course
-    e = Course.create(name: "English", course_code: "ENG", color: "red", period: "First", description: "How to English")
-    b = Assignment.create(name: "Oxford Comma Practice", percent_of_grade: 0.10)
-    c = Assignment.create(name: "Oxford Comma Practice", percent_of_grade: 0.10)
+    e = Course.create(name: "English", course_code: "ENG002", color: "red", period: "First", description: "How to English")
+    b = Assignment.create(course_id: nil, name: "Oxford Comma Practice", percent_of_grade: 0.10)
+    c = Assignment.create(course_id: nil, name: "Oxford Comma Practice", percent_of_grade: 0.10)
     e.assignments << b
     e.assignments << c
     assert b.valid?
@@ -201,7 +201,7 @@ class ApplicationTest < Minitest::Test
   end
 
   def test_pre_class_assignments_can_have_many_lessons
-    pre = Assignment.create(name: "Pre-assignment 1")
+    pre = Assignment.create(course_id: nil, name: "Pre-assignment 1", percent_of_grade: 0.05)
     l = Lesson.create(name: "French verb conjugation", description: "Discussion of the French verbs", outline: "Will discuss French stuff", lead_in_question: "Parlez vous francais?")
     pre.lessons << l
     assert_equal [l], pre.lessons
@@ -209,7 +209,7 @@ class ApplicationTest < Minitest::Test
 
   def test_schools_can_have_many_courses_through_terms
     s = School.create(name: "Lakeview High")
-    f = Term.create(name: "Fall", starts_on: 2015-10-01, ends_on: 2015-12-30)
+    f = Term.create(name: "Fall", starts_on: 2015-10-01, ends_on: 2015-12-30, school_id: nil)
     phys_ed = Course.create(name: "P.E.", course_code: "PEE133", color: "grey", period: "ninth", description: "Learn to exercise.")
     f.courses << phys_ed
     s.terms << f
@@ -226,9 +226,9 @@ class ApplicationTest < Minitest::Test
 
   def test_reading_urls_must_start_with_http_or_https
     assert_raises do r = Reading.create!(lesson_id: 5, order_number: 4, url: "hello") end
-    assert Reading.create(lesson_id: 3, order_number: 4, url: "https://")
-    assert Reading.create(lesson_id: 2, order_number: 4, url: "http://")
-    assert_raises do r = Reading.create!(lesson_id: 1, order_number: 4, url: "http.hi") end
+    assert Reading.create(lesson_id: nil, order_number: 4, url: "https://")
+    assert Reading.create(lesson_id: nil, order_number: 4, url: "http://")
+    assert_raises do r = Reading.create!(lesson_id: nil, order_number: 4, url: "http.hi") end
   end
 
   def test_courses_must_have_course_code_and_name
@@ -236,7 +236,7 @@ class ApplicationTest < Minitest::Test
   end
 
   def test_course_code_is_unique_within_given_term_id
-    fall = Term.create(name: "fall")
+    fall = Term.create(name: "Fall", starts_on: 2015-10-01, ends_on: 2015-12-30, school_id: nil)
     french = Course.create(name: "Frenchies", course_code: "FRE123", color: "blue", period: "Third", description: "Learn French oui oui")
     french2 = Course.create(name: "Spanishdudes", course_code: "FRE123", color: "green", period: "Fourth", description: "Learn Spanish si si")
     fall.courses << french

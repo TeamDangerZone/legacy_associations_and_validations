@@ -1,23 +1,18 @@
-# Basic test requires
 require 'minitest/autorun'
 require 'minitest/pride'
-
-# Include both the migration and the app itself
 require './migration'
 require './application'
-# Overwrite the development database connection with a test connection.
+
 ActiveRecord::Base.establish_connection(
   adapter:  'sqlite3',
   database: 'test.sqlite3'
 )
 ActiveRecord::Migration.verbose = false
-# Gotta run migrations before we can run tests.  Down will fail the first time,
-# so we wrap it in a begin/rescue.
+
 begin ApplicationMigration.migrate(:down); rescue; end
 ApplicationMigration.migrate(:up)
 
 
-# Finally!  Let's test the thing.
 class ApplicationTest < Minitest::Test
 
   def test_truth
@@ -25,18 +20,21 @@ class ApplicationTest < Minitest::Test
   end
 
   def test_schools_can_have_many_terms
-    s = School.create(name: "Lakeview High")
-    f = Term.create(name: "Fall", starts_on: 2015-10-01, ends_on: 2015-12-30, school_id: nil)
-    s.terms << f
-    assert_equal "Fall", f.name
-    assert_equal 2015-10-01, f.starts_on
-    assert_equal 2015-12-30, f.ends_on
+    school = School.create(name: "Lakeview High")
+    fall = Term.create(name: "Fall", starts_on: 2015-10-01, ends_on: 2015-12-30, school_id: nil)
+    school.terms << fall
+    school.save
+    assert_equal "Fall", fall.name
+    assert_equal 2015-10-01, fall.starts_on
+    assert_equal 2015-12-30, fall.ends_on
+    assert_equal school.id, fall.school_id
   end
 
   def test_lessons_can_have_many_readings
     l = Lesson.create(name: "The Oxford Comma", description: "Discussion of the Oxford Comma", outline: "Will debate use of the Oxford Comma", lead_in_question: "Do you always use an Oxford Comma?")
     r = Reading.create(lesson_id: nil, caption: "History of the Oxford Comma", order_number:01, url: "www.oxfordcomma.org")
     l.readings << r
+    l.save
     assert_equal [r], l.readings
   end
 
@@ -44,13 +42,13 @@ class ApplicationTest < Minitest::Test
     m = Lesson.create(name: "The Mystery of 'subtraction'", description: "How to subtract", outline: "A peek at the nuances of 'subtraction'", lead_in_question: "How has subtraction impacted your life?")
     q = Reading.create(lesson_id: nil, caption: "2 - 3 = negative fun", order_number: 4, url: "http://www.math.org")
     m.readings << q
+    m.save
     m.destroy
     m.save
     assert q.destroyed?
   end
 
   def test_term_can_have_many_courses
-    s = School.create(name: "Lakeview High")
     t = Term.create(name: "Spring", starts_on: 2015-01-15, ends_on: 2015-05-30, school_id: nil)
     c = Course.create(name: "French", course_code: "FRE333", color: "blue", period: "Third", description: "Learn French oui oui")
     t.courses << c
@@ -59,32 +57,33 @@ class ApplicationTest < Minitest::Test
   end
 
   def test_term_with_courses_cannot_be_deleted
-    s = School.create(name: "Lakeview High")
-    spring = Term.create(name: "Spring", starts_on: 2015-01-15, ends_on: 2015-05-30, school_id: nil)
+    spring = Term.create(name: "Spring", starts_on: 2015-01-15, ends_on: 2015-05-30, school_id: 3)
     french = Course.create(name: "French", course_code: "FRE654", color: "blue", period: "Third", description: "Learn French oui oui")
-    s.terms << spring
-    s.save
     spring.courses << french
-    begin
-      spring.destroy
-    rescue
-    end
-      assert_equal [french], spring.reload.courses
+    spring.save
+    assert_raises do spring.destroy end
+    assert_equal [french], spring.reload.courses
+    assert_equal 1, spring.courses.count
   end
 
   def test_courses_can_have_many_lessons
     e = Course.create(name: "English", course_code: "ENG333", color: "red", period: "First", description: "How to English")
-    l = Lesson.create(name: "The Oxford Comma", description: "Discussion of the Oxford Comma", outline: "Will debate use of the Oxford Comma", lead_in_question: "Do you always use an Oxford Comma")
-    e.lessons << l
-    assert_equal [l], e.lessons
+    lesson = Lesson.create(name: "The Oxford Comma", description: "Discussion of the Oxford Comma", outline: "Will debate use of the Oxford Comma", lead_in_question: "Do you always use an Oxford Comma")
+    lesson2 = Lesson.create(name: "Spelling", description: "How to tighten up your spelling", outline: "An attempt to remember spelling before the text message age", lead_in_question: "R u spellin' rite?")
+    e.lessons << lesson
+    e.lessons << lesson2
+    e.save
+    assert_equal [lesson, lesson2], e.lessons
+    assert_equal 2, e.lessons.count
+    assert_equal e.id, lesson.course_id
   end
 
   def test_lessons_are_automatically_destroyed_when_course_is_destroyed
     e = Course.create(name: "English", course_code: "ENG333", color: "red", period: "First", description: "How to English")
     l = Lesson.create(name: "The Oxford Comma", description: "Discussion of the Oxford Comma", outline: "Will debate use of the Oxford Comma", lead_in_question: "Do you always use an Oxford Comma")
     e.lessons << l
-    e.destroy
     e.save
+    e.destroy
     assert l.destroyed?
   end
 
@@ -255,12 +254,23 @@ class ApplicationTest < Minitest::Test
     assert Course.create(course_code: "qqq555")
     assert_raises do c = Course.create!(course_code: "893f39") end
   end
-
-  def test_instructors_as_users_can_be_course_instructors
-    english_prof = CourseInstructor.create()
+# Associate course_instructors with instructors (who happen to be users)
+  def test_association_with_course_instructors_and_instructors_as_users
+    english_prof = CourseInstructor.create
     shirley = User.create(first_name: "Shirley", last_name: "Temple", email: "st@aol.com", photo_url: "https://www.com")
     english_prof.instructor = shirley
     english_prof.save
     assert_equal shirley, english_prof.instructor
+    # assert_equal shirley.instructors.first, english_prof
   end
+
+  # def test_association_with_course_students_and_students_as_users
+  #   course_student = CourseStudent.create
+  #   user = User.create(first_name: "Daniel", last_name: "Temple", email: "dt@aol.com", photo_url: "http://www.com")
+  #   course_student.student = user
+  #   course_student.save
+  #   assert_equal user, course_student.student
+  #   assert_equal user.student.first, course_student
+  # end
+  # Associate CourseStudents with students (who happen to be users)
 end

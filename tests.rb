@@ -261,23 +261,12 @@ class ApplicationTest < Minitest::Test
     assert Course.create(course_code: "qqq555")
     assert_raises do c = Course.create!(course_code: "893f39") end
   end
-# Associate course_instructors with instructors (who happen to be users)
+
   def test_association_with_course_instructors_and_instructors_as_users
     english_prof = CourseInstructor.create
     shirley = User.create(first_name: "Shirley", last_name: "Temple", email: "st@aol.com", photo_url: "https://www.com")
     english_prof.instructor = shirley
     english_prof.save
     assert_equal shirley, english_prof.instructor
-    # assert_equal shirley.instructors.first, english_prof
   end
-
-  # def test_association_with_course_students_and_students_as_users
-  #   course_student = CourseStudent.create
-  #   user = User.create(first_name: "Daniel", last_name: "Temple", email: "dt@aol.com", photo_url: "http://www.com")
-  #   course_student.student = user
-  #   course_student.save
-  #   assert_equal user, course_student.student
-  #   assert_equal user.student.first, course_student
-  # end
-  # Associate CourseStudents with students (who happen to be users)
 end

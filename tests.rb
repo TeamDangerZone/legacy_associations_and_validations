@@ -90,8 +90,13 @@ class ApplicationTest < Minitest::Test
   def test_courses_can_have_many_students
     c = Course.create(name: "Spanish", course_code: "SPA111", color: "green", period: "Fourth", description: "Learn Spanish si si")
     s = CourseStudent.create(student_id: 244, final_grade: "F")
+    other_student = CourseStudent.create(student_id: 244, final_grade: "A")
     c.course_students << s
-    assert_equal [s], c.course_students
+    c.course_students << other_student
+    c.save
+    assert_equal [s, other_student], c.course_students
+    assert_equal s, c.course_students.first
+    assert_equal 2, c.course_students.count
   end
 
   def test_courses_with_students_cannot_be_deleted
